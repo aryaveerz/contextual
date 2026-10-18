@@ -1,0 +1,64 @@
+# Contextual: Multi-Container Orchestration
+# Services: FalkorDB + FastAPI Backend + React Frontend
+
+services:
+  falkordb:
+    image: falkordb/falkordb:latest
+    container_name: contextual_falkordb
+    # FalkorDB is isolated inside the Docker network; backend connects via falkordb:6379.
+    # Host port mapping is omitted to prevent collision with local Redis/FalkorDB instances.
+    volumes:
+      - falkordb_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: contextual_backend
+    # Published on loopback with kernel dynamic port assignment by default (${BACKEND_PORT:-0}).
+    # Override via environment variable (e.g., BACKEND_PORT=8000) for a fixed port.
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-0}:8000"
+    environment:
+      - FALKORDB_HOST=falkordb
+      - FALKORDB_PORT=6379
+      - FALKORDB_GRAPH_NAME=contextual_security_graph
+      - FALKORDB_TIMEOUT_MS=5000
+      - TENANT_MASTER_KEY_SECRET=${TENANT_MASTER_KEY_SECRET:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+      - AUTH_JWT_SECRET=${AUTH_JWT_SECRET:-fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210}
+      - DEFAULT_ACTIVE_TENANT=${DEFAULT_ACTIVE_TENANT:-tenant-corp-alpha}
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - MAX_TRAVERSAL_DEPTH=${MAX_TRAVERSAL_DEPTH:-5}
+      - QUERY_ROW_CAP=${QUERY_ROW_CAP:-100}
+      - BACKEND_HOST=0.0.0.0
+      - BACKEND_PORT=8000
+      - CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000
+    depends_on:
+      falkordb:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: contextual_frontend
+    # Published on loopback with kernel dynamic port assignment by default (${FRONTEND_PORT:-0}).
+    # Override via environment variable (e.g., FRONTEND_PORT=3000) for a fixed port.
+    # Nginx reverse proxy routes /api, /mcp, and /docs to backend:8000 internally.
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-0}:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  falkordb_data:
