@@ -527,7 +527,8 @@ contextual/
 │       ├── components/        Graph canvas, dual-clock slider, governance panel
 │       └── services/          Backend API client
 ├── scripts/
-│   └── get_urls.py            Dynamic port and URL discovery tool
+│   ├── get_urls.py            Dynamic port and URL discovery tool
+│   └── reset.py               Automated teardown and graph reseeding tool
 └── docker-compose.yml
 ```
 
