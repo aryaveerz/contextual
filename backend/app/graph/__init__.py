@@ -1,0 +1,46 @@
+"""
+FalkorDB query engine: openCypher templates and bounded execution envelope.
+"""
+from .queries import (
+    TOPOLOGY_ATTACK_PATH,
+    GOVERNING_RULE_CHECK,
+    FINDING_METADATA,
+    CONNECTED_ENDPOINTS,
+    IAM_ROLE_ASSUMPTIONS,
+    SENSITIVE_ASSET_ACCESS,
+    FULL_PATH_ENUMERATION,
+    get_query_template,
+    build_query_params,
+)
+
+# Back-compat Q1-Q7 aliases
+Q1_TOPOLOGY_PATH = TOPOLOGY_ATTACK_PATH
+Q2_GOVERNING_RULE = GOVERNING_RULE_CHECK
+Q3_FINDING_METADATA = FINDING_METADATA
+Q4_CONNECTED_ENDPOINTS = CONNECTED_ENDPOINTS
+Q5_IAM_ASSUMPTIONS = IAM_ROLE_ASSUMPTIONS
+Q6_SENSITIVE_ACCESS = SENSITIVE_ASSET_ACCESS
+Q7_FULL_INVESTIGATION = FULL_PATH_ENUMERATION
+
+from .layer3_envelope import Layer3QueryEngine, get_query_engine
+
+__all__ = [
+    "Q1_TOPOLOGY_PATH",
+    "Q2_GOVERNING_RULE",
+    "Q3_FINDING_METADATA",
+    "Q4_CONNECTED_ENDPOINTS",
+    "Q5_IAM_ASSUMPTIONS",
+    "Q6_SENSITIVE_ACCESS",
+    "Q7_FULL_INVESTIGATION",
+    "TOPOLOGY_ATTACK_PATH",
+    "GOVERNING_RULE_CHECK",
+    "FINDING_METADATA",
+    "CONNECTED_ENDPOINTS",
+    "IAM_ROLE_ASSUMPTIONS",
+    "SENSITIVE_ASSET_ACCESS",
+    "FULL_PATH_ENUMERATION",
+    "get_query_template",
+    "build_query_params",
+    "Layer3QueryEngine",
+    "get_query_engine",
+]
