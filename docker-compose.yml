@@ -24,7 +24,7 @@ services:
     # Published on loopback with kernel dynamic port assignment by default (${BACKEND_PORT:-0}).
     # Override via environment variable (e.g., BACKEND_PORT=8000) for a fixed port.
     ports:
-      - "127.0.0.1:${BACKEND_PORT:-0}:8000"
+      - "127.0.0.1:${BACKEND_PORT:-8000}:8000"
     environment:
       - FALKORDB_HOST=falkordb
       - FALKORDB_PORT=6379
@@ -51,11 +51,10 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: contextual_frontend
-    # Published on loopback with kernel dynamic port assignment by default (${FRONTEND_PORT:-0}).
-    # Override via environment variable (e.g., FRONTEND_PORT=3000) for a fixed port.
+    # Published on loopback (default 3000). Override via FRONTEND_PORT env var if needed.
     # Nginx reverse proxy routes /api, /mcp, and /docs to backend:8000 internally.
     ports:
-      - "127.0.0.1:${FRONTEND_PORT:-0}:80"
+      - "127.0.0.1:${FRONTEND_PORT:-3000}:80"
     depends_on:
       - backend
     restart: unless-stopped
